@@ -1,0 +1,16 @@
+black
+isort
+mypy
+portray
+pytest
+pytest-mock
+pytest-asyncio
+pytest-cov
+flake8
+flake8-blind-except
+flake8-polyfill
+tox
+tox-asdf
+# project
+aiohttp>=3.5.4
+attr
