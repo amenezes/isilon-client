@@ -1,6 +1,8 @@
 import attr
 from aiohttp import ClientSession
 
+from isilon.response import Response
+
 
 @attr.s
 class Http:
@@ -14,7 +16,7 @@ class Http:
     async def get(self, url, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
             response = await session.get(url, *args, **kwargs)
-        return response
+        return Response(response)
 
     async def get_large_object(self, url, filename, chunk_size=50, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
@@ -25,29 +27,29 @@ class Http:
                     if not chunk:
                         break
                     f.write(chunk)
-        return response
+        return Response(response)
 
     async def post(self, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
             response = await session.post(*args, **kwargs)
-        return response
+        return Response(response)
 
     async def send_large_object(self, url, filename, *args, **kwargs):
         with open(filename, "rb") as f:
             response = await self.put(url, data=f, *args, **kwargs)
-        return response
+        return Response(response)
 
     async def put(self, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
             response = await session.put(*args, **kwargs)
-        return response
+        return Response(response)
 
     async def delete(self, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
             response = await session.delete(*args, **kwargs)
-        return response
+        return Response(response)
 
     async def head(self, *args, **kwargs):
         async with ClientSession(*self.session_args, **self.session_kwargs) as session:
             response = await session.head(*args, **kwargs)
-        return response
+        return Response(response)

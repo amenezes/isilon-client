@@ -1,11 +1,13 @@
 import json
 
 import pytest
+from cleo import Application
 
 from isilon.client import IsilonClient
 from isilon.creds import Credentials
 from isilon.http import Http
 from isilon.api.base import BaseAPI
+from isilon.commands import AccountsCommand, ContainersCommand, DiscoverabilityCommand, EndpointsCommand, ObjectsCommand
 
 
 @pytest.fixture
@@ -28,6 +30,20 @@ def isilon_client_mock(monkeypatch):
     monkeypatch.setattr(BaseAPI, 'get_token', token_mock)
     monkeypatch.setattr(BaseAPI, 'base_request', request_success_mock)
     return IsilonClient()
+
+
+@pytest.fixture
+def cmd_app(monkeypatch):
+    monkeypatch.setattr(BaseAPI, 'get_token', token_mock)
+    monkeypatch.setattr(BaseAPI, 'base_request', request_success_mock)
+
+    application = Application()
+    application.add(AccountsCommand())
+    application.add(ContainersCommand())
+    application.add(DiscoverabilityCommand())
+    application.add(EndpointsCommand())
+    application.add(ObjectsCommand())
+    return application
 
 
 async def token_mock(*args, **kwargs):

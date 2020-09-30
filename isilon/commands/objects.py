@@ -40,13 +40,13 @@ class ObjectsCommand(Command):
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")
         elif self.option("update"):
-            pass
+            asyncio.run(isi_client.objects.update_metadata(container_name, object_name))
+            self.line("<options=bold>metadata updated.</>")
         elif self.option("delete"):
             asyncio.run(isi_client.objects.delete(container_name, object_name))
             self.line(f"<options=bold><comment>{object_name}</comment> deleted.</>")
         else:
-            loop = asyncio.get_event_loop()
-            resp = loop.run_until_complete(
+            asyncio.run(
                 isi_client.objects.get_large(container_name, object_name, object_name)
             )
             self.line(f"<options=bold><comment>{object_name}</comment> saved.</>")

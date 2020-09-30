@@ -24,8 +24,8 @@ class AccountsCommand(Command):
             resp = asyncio.run(isi_client.accounts.show(account_name))
             self.line(f"{resp}")
         elif self.option("update"):
-            resp = asyncio.run(isi_client.accounts.update(account_name))
-            self.line(f"{resp.status}")
+            asyncio.run(isi_client.accounts.update(account_name))
+            self.line("<options=bold>metadata updated.</>")
         elif self.option("metadata"):
             resp = asyncio.run(isi_client.accounts.metadata(account_name))
             for meta_key, meta_value in resp.items():

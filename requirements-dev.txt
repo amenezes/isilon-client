@@ -13,4 +13,5 @@ tox
 tox-asdf
 # project
 aiohttp>=3.5.4
-attr
+attrs
+cleo

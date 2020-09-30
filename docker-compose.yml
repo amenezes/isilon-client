@@ -1,0 +1,7 @@
+version: "3"
+services:
+    isilon:
+      container_name: isilon
+      image: bouncestorage/swift-aio
+      ports:
+        - 8080:8080
