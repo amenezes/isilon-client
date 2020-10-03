@@ -4,7 +4,7 @@ from isilon.creds import Credentials
 from isilon.http import Http
 
 
-@attr.s
+@attr.s(frozen=True)
 class BaseAPI:
     API_VERSION = "v1"
     http = attr.ib(type=Http, repr=False)

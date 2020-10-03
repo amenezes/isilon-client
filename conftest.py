@@ -3,7 +3,7 @@ import json
 import pytest
 from cleo import Application
 
-from isilon.client import IsilonClient
+import isilon
 from isilon.creds import Credentials
 from isilon.http import Http
 from isilon.api.base import BaseAPI
@@ -16,11 +16,6 @@ def http():
 
 
 @pytest.fixture
-def isilon_client():
-    return IsilonClient()
-
-
-@pytest.fixture
 def creds(http):
     return Credentials(http, "account", "user", "pass")
 
@@ -29,7 +24,7 @@ def creds(http):
 def isilon_client_mock(monkeypatch):
     monkeypatch.setattr(BaseAPI, 'get_token', token_mock)
     monkeypatch.setattr(BaseAPI, 'base_request', request_success_mock)
-    return IsilonClient()
+    return isilon
 
 
 @pytest.fixture

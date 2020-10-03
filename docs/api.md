@@ -15,60 +15,60 @@ ISILON_PASSWORD=testing
 This values can be override setting environment variable or incluing in the class constructor.
 
 ```python
-from isilon import IsilonClient
+import isilon
 
-client = IsilonClient(
-    isilon_addr='http://localhost:8080' # default
-    account='test' # default
-    user='tester' # default
-    password='testing' # default
+isilon.isilon_addr
+# default: 'http://localhost:8080'
+
+isilon.account
+# default: 'test'
+
+isilon.user
+# default: 'tester'
+
+isilon.password
+# default: 'testing'
 )
 ```
 
 ## Discoverability
 
-```
+```python
 # List activated capabilities
-response = await client.discoverability.info() # JSON
-print(response)
+await isilon.discoverability.info()
 ```
 
 ## Accounts
 
 ```python
 # Show account details and list containers.
-await client.accounts.show()
+await isilon.accounts.show()
 
 # Create, update, or delete account metadata.
-await client.accounts.update()
+await isilon.accounts.update()
 
 # Show account metadata.
-await client.accounts.metadata()
+await isilon.accounts.metadata()
 ```
 
 ## Containers
 
 ```python
 # create container
-resp = await client.containers.create("my_container")
-print(resp)
+await isilon.containers.create("my_container")
 
 # show container details and list objects
-resp = await client.containers.objects("my_container")
-print(resp)
+await isilon.containers.objects("my_container")
 
 # create, update or delete container metadata
 metadata = {'X-Container-Meta-Test': "My metadata"}
-resp = await client.containers.update_metadata("my_container", headers=metadata)
-print(resp)
+await isilon.containers.update_metadata("my_container", headers=metadata)
 
 # show container metadata
-resp = await client.containers.show_metadata("my_container")
-print(resp)
+await isilon.containers.show_metadata("my_container")
 
 # delete container
-resp = await client.containers.delete("my_container")
-print(resp)
+await isilon.containers.delete("my_container")
 ```
 
 ## Objects
@@ -76,34 +76,34 @@ print(resp)
 ```python
 # Get object content and metadata.
 # Use this method only for small objects
-await client.objects.get("my_container". "my_object")
+await isilon.objects.get("my_container". "my_object")
 
 # Get large object content and metadata.
-await client.objects.get_large("my_container", "my_remote_object", "my_object")
+await isilon.objects.get_large("my_container", "my_remote_object", "my_object")
 
 # Create or replace object
-await client.objects.create("my_container", "my_remote_object", "my_object")
+await isilon.objects.create("my_container", "my_remote_object", "my_object")
 
 # Create or replace large object.
-await client.objects.create_large("my_container", "my_remote_object", "my_object")
+await isilon.objects.create_large("my_container", "my_remote_object", "my_object")
 
 # Copy object.
 # This call will raise NotImplementedError
-await client.objects.copy("my_container", "my_remote_object", "my_object")
+await isilon.objects.copy("my_container", "my_remote_object", "my_object")
 
 # Delete object.
-await client.objects.delete("my_container", "my_remote_object", "my_object")
+await isilon.objects.delete("my_container", "my_remote_object", "my_object")
 
 # Show object metadata.
-await client.objects.show_metadata("my_container", "my_remote_object", "my_object")
+await isilon.objects.show_metadata("my_container", "my_remote_object", "my_object")
 
 # Create or update object metadata.
-await client.objects.update_metadata("my_container", "my_remote_object", "my_object")
+await isilon.objects.update_metadata("my_container", "my_remote_object", "my_object")
 ```
 
 ## Endpoints
 
 ```python
 # List endpoints.
-await client.endpoints()
+await isilon.endpoints()
 ```

@@ -1,9 +1,9 @@
-class Response:
-    def __init__(self, response):
-        self._response = response
+import attr
 
-    def __repr__(self):
-        return f"Response(url='{self.url}', status={self.status}, http_version='{self.http_version}', method='{self.method}', headers={self.headers})"
+
+@attr.s(frozen=True)
+class Response:
+    _response = attr.ib(repr=False)
 
     @property
     def status(self) -> int:

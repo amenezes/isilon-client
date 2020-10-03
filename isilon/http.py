@@ -4,22 +4,17 @@ from aiohttp import ClientSession
 from isilon.response import Response
 
 
-@attr.s
+@attr.s(frozen=True)
 class Http:
-    session_args = attr.ib(
-        type=tuple, factory=tuple, validator=attr.validators.instance_of(tuple)
-    )
-    session_kwargs = attr.ib(
-        type=dict, factory=dict, validator=attr.validators.instance_of(dict)
-    )
-
-    async def get(self, url, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
+    async def get(self, url, session_config=dict(), *args, **kwargs):
+        async with ClientSession(**session_config) as session:
             response = await session.get(url, *args, **kwargs)
         return Response(response)
 
-    async def get_large_object(self, url, filename, chunk_size=50, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
+    async def get_large_object(
+        self, url, filename, chunk_size=50, session_config=dict(), *args, **kwargs
+    ):
+        async with ClientSession(**session_config) as session:
             response = await session.get(url, *args, **kwargs)
             with open(filename, "wb") as f:
                 while True:
@@ -29,27 +24,33 @@ class Http:
                     f.write(chunk)
         return Response(response)
 
-    async def post(self, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
-            response = await session.post(*args, **kwargs)
+    async def post(self, url, session_config=dict(), *args, **kwargs):
+        async with ClientSession(**session_config) as session:
+            response = await session.post(url, *args, **kwargs)
         return Response(response)
 
-    async def send_large_object(self, url, filename, *args, **kwargs):
+    async def send_large_object(
+        self, url, filename, session_config=dict(), *args, **kwargs
+    ):
         with open(filename, "rb") as f:
-            response = await self.put(url, data=f, *args, **kwargs)
+            response = await self.put(
+                url, session_config=session_config, data=f, *args, **kwargs
+            )
         return Response(response)
 
-    async def put(self, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
-            response = await session.put(*args, **kwargs)
+    async def put(self, url, session_config=dict(), *args, **kwargs):
+        async with ClientSession(**session_config) as session:
+            response = await session.put(url, *args, **kwargs)
         return Response(response)
 
-    async def delete(self, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
-            response = await session.delete(*args, **kwargs)
+    async def delete(self, url, session_config=dict(), *args, **kwargs):
+        async with ClientSession(**session_config) as session:
+            response = await session.delete(url, *args, **kwargs)
         return Response(response)
 
-    async def head(self, *args, **kwargs):
-        async with ClientSession(*self.session_args, **self.session_kwargs) as session:
-            response = await session.head(*args, **kwargs)
+    async def head(self, url, session_config=dict(), *args, **kwargs):
+        print(args)
+        print(kwargs)
+        async with ClientSession(**session_config) as session:
+            response = await session.head(url, *args, **kwargs)
         return Response(response)

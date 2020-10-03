@@ -2,7 +2,7 @@ import asyncio
 
 from cleo import Command
 
-from isilon import IsilonClient
+import isilon
 
 
 class AccountsCommand(Command):
@@ -18,15 +18,14 @@ class AccountsCommand(Command):
     """
 
     def handle(self):
-        isi_client = IsilonClient()
         account_name = str(self.argument("account"))
         if self.option("show"):
-            resp = asyncio.run(isi_client.accounts.show(account_name))
+            resp = asyncio.run(isilon.accounts.show(account_name))
             self.line(f"{resp}")
         elif self.option("update"):
-            asyncio.run(isi_client.accounts.update(account_name))
+            asyncio.run(isilon.accounts.update(account_name))
             self.line("<options=bold>metadata updated.</>")
         elif self.option("metadata"):
-            resp = asyncio.run(isi_client.accounts.metadata(account_name))
+            resp = asyncio.run(isilon.accounts.metadata(account_name))
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")

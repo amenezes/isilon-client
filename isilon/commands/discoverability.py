@@ -3,7 +3,7 @@ import json
 
 from cleo import Command
 
-from isilon import IsilonClient
+import isilon
 
 
 class DiscoverabilityCommand(Command):
@@ -14,6 +14,5 @@ class DiscoverabilityCommand(Command):
     """
 
     def handle(self):
-        isi_client = IsilonClient()
-        resp = asyncio.run(isi_client.discoverability.info())
+        resp = asyncio.run(isilon.discoverability.info())
         self.line(f"{json.dumps(resp, indent=4, sort_keys=True)}")

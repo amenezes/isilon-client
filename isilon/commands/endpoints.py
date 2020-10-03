@@ -2,7 +2,7 @@ import asyncio
 
 from cleo import Command
 
-from isilon import IsilonClient
+import isilon
 
 
 class EndpointsCommand(Command):
@@ -13,6 +13,5 @@ class EndpointsCommand(Command):
     """
 
     def handle(self):
-        isi_client = IsilonClient()
-        resp = asyncio.run(isi_client.endpoints())
+        resp = asyncio.run(isilon.endpoints())
         self.line(f"{resp}")
