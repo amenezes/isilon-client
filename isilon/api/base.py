@@ -1,24 +1,22 @@
-import attr
-
-from isilon.creds import Credentials
-from isilon.http import Http
-
-
-@attr.s(frozen=True)
 class BaseAPI:
     API_VERSION = "v1"
-    http = attr.ib(type=Http, repr=False)
-    url = attr.ib(type=str, validator=attr.validators.instance_of(str), converter=str)
-    credentials = attr.ib(
-        type=Credentials, validator=attr.validators.instance_of(Credentials)
-    )
 
-    async def base_request(self, fn, url, headers: dict = {}, *args, **kwargs):
-        headers = await self.get_token(headers)
-        response = await fn(url, headers=headers, *args, **kwargs)
-        return response
+    def __init__(self, client):
+        self._client = client
 
-    async def get_token(self, headers: dict) -> dict:
-        token = await self.credentials.x_auth_token(self.url)
+    async def include_auth_header(self, headers: dict) -> dict:
+        token = await self._client.credentials.x_auth_token()
         headers.update(token)
         return headers
+
+    @property
+    def address(self):
+        return self._client.address
+
+    @property
+    def http(self):
+        return self._client.http
+
+    @property
+    def account(self):
+        return self._client.account

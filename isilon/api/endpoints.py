@@ -1,16 +1,13 @@
-import attr
-
 from isilon.api.base import BaseAPI
 
 
-@attr.s(frozen=True)
 class Endpoints(BaseAPI):
     async def __call__(self, headers: dict = {}, **kwargs):
         """List endpoints."""
-        response = await self.base_request(
-            self.http.get,
-            f"{self.url}/{self.API_VERSION}/endpoints",
+        await self.include_auth_header(headers)
+        async with self.http.get(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/endpoints",
             headers=headers,
             **kwargs,
-        )
-        return response.status
+        ) as resp:
+            return resp.status

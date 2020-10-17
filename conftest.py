@@ -1,37 +1,45 @@
-import json
+import re
 
 import pytest
 from cleo import Application
+from aioresponses import aioresponses
 
-import isilon
-from isilon.creds import Credentials
-from isilon.http import Http
-from isilon.api.base import BaseAPI
+from isilon.client import IsilonClient
 from isilon.commands import AccountsCommand, ContainersCommand, DiscoverabilityCommand, EndpointsCommand, ObjectsCommand
+from isilon.exceptions import TokenRetrieveException
 
 
 @pytest.fixture
-def http():
-    return Http()
+def token_exeption(mock_aioresponse):
+    mock_aioresponse.get(
+        "http://localhost:8080/auth/v1.0", exception=TokenRetrieveException
+    )
+
+@pytest.fixture
+def mock_aioresponse():
+    with aioresponses() as m:
+        yield m
+
+@pytest.fixture
+def api_mock(mock_aioresponse):
+    pattern = re.compile(r'^http://localhost:8080/v1/AUTH_test/.*$')
+    mock_aioresponse.get('http://localhost:8080/auth/v1.0', headers={"X-Auth-Token": "abc123lkj"})
+    mock_aioresponse.get('http://localhost:8080/info', payload='')
+    mock_aioresponse.get(pattern, status=200, payload='')
+    mock_aioresponse.post(pattern, payload='')
+    mock_aioresponse.head(pattern, headers={"X-Object-Meta": "test"})
+    mock_aioresponse.delete(pattern, payload='')
+    mock_aioresponse.put(pattern, status=200)
 
 
 @pytest.fixture
-def creds(http):
-    return Credentials(http, "account", "user", "pass")
+def isilon_client_mock(api_mock):
+    client = IsilonClient()
+    return client
 
 
 @pytest.fixture
-def isilon_client_mock(monkeypatch):
-    monkeypatch.setattr(BaseAPI, 'get_token', token_mock)
-    monkeypatch.setattr(BaseAPI, 'base_request', request_success_mock)
-    return isilon
-
-
-@pytest.fixture
-def cmd_app(monkeypatch):
-    monkeypatch.setattr(BaseAPI, 'get_token', token_mock)
-    monkeypatch.setattr(BaseAPI, 'base_request', request_success_mock)
-
+def cmd_app(api_mock):
     application = Application()
     application.add(AccountsCommand())
     application.add(ContainersCommand())
@@ -39,20 +47,3 @@ def cmd_app(monkeypatch):
     application.add(EndpointsCommand())
     application.add(ObjectsCommand())
     return application
-
-
-async def token_mock(*args, **kwargs):
-    return {"X-Auth-Token": "abc123lkj"}
-
-
-async def request_success_mock(*args, **kwargs):
-    return ResponseMock()
-
-
-class ResponseMock:
-    def __init__(self, *args, **kwargs):
-        self.status = kwargs.get('status', 200)
-        self.headers = {"X-Object-Meta": "mock"}
-
-    async def json(self):
-        return json.dumps({"message": "ok"})

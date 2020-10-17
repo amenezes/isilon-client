@@ -1,9 +1,8 @@
-import asyncio
 import json
 
 from cleo import Command
 
-import isilon
+from isilon.commands.exec import Operator
 
 
 class DiscoverabilityCommand(Command):
@@ -14,5 +13,6 @@ class DiscoverabilityCommand(Command):
     """
 
     def handle(self):
-        resp = asyncio.run(isilon.discoverability.info())
+        op = Operator()
+        resp = op.execute(op.client.discoverability.info)
         self.line(f"{json.dumps(resp, indent=4, sort_keys=True)}")

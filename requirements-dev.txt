@@ -6,6 +6,7 @@ pytest
 pytest-mock
 pytest-asyncio
 pytest-cov
+aioresponses
 flake8
 flake8-blind-except
 flake8-polyfill

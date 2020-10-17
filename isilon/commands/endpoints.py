@@ -1,8 +1,6 @@
-import asyncio
-
 from cleo import Command
 
-import isilon
+from isilon.commands.exec import Operator
 
 
 class EndpointsCommand(Command):
@@ -13,5 +11,6 @@ class EndpointsCommand(Command):
     """
 
     def handle(self):
-        resp = asyncio.run(isilon.endpoints())
+        op = Operator()
+        resp = op.execute(op.client.endpoints)
         self.line(f"{resp}")

@@ -1,14 +1,10 @@
-import attr
-
 from isilon.api.base import BaseAPI
 
 
-@attr.s(frozen=True)
 class Discoverability(BaseAPI):
-    async def info(self, *args, **kwargs):
+    async def info(self, headers: dict = {}, *args, **kwargs):
         """List activated capabilities."""
-        response = await self.base_request(
-            self.http.get, f"{self.url}/info", *args, **kwargs
-        )
-        json_response = await response.json()
+        await self.include_auth_header(headers)
+        async with self.http.get(f"{self.address}/info", *args, **kwargs) as resp:
+            json_response = await resp.json()
         return json_response

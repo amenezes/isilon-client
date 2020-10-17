@@ -1,9 +1,8 @@
-import asyncio
 import json
 
 from cleo import Command
 
-import isilon
+from isilon.commands.exec import Operator
 
 
 class ContainersCommand(Command):
@@ -21,24 +20,31 @@ class ContainersCommand(Command):
     """
 
     def handle(self):
+        op = Operator()
         container_name = str(self.argument("container"))
         headers = dict()
         for header in self.option("headers"):
             headers.update(json.loads(header))
         if self.option("objects"):
-            resp = asyncio.run(isilon.containers.objects(container_name, headers))
+            resp = op.execute(op.client.containers.objects, container_name, headers)
             for obj in resp:
-                self.line(f"{obj}")
+                self.line(json.dumps(obj, indent=4, sort_keys=True))
         elif self.option("create"):
-            asyncio.run(isilon.containers.create(container_name, headers))
-            self.line(f"<options=bold><comment>{container_name}</comment> created.</>")
+            op.execute(op.client.containers.create, container_name, headers)
+            self.line(
+                f"<options=bold>container <comment>{container_name}</comment> created.</>"
+            )
         elif self.option("delete"):
-            asyncio.run(isilon.containers.delete(container_name, headers))
-            self.line(f"<options=bold><comment>{container_name}</comment> deleted.</>")
+            op.execute(op.client.containers.delete, container_name, headers)
+            self.line(
+                f"<options=bold>container <comment>{container_name}</comment> deleted.</>"
+            )
         elif self.option("metadata"):
-            resp = asyncio.run(isilon.containers.show_metadata(container_name, headers))
+            resp = op.execute(
+                op.client.containers.show_metadata, container_name, headers
+            )
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")
         elif self.option("update"):
-            asyncio.run(isilon.containers.update_metadata(container_name, headers))
-            self.line("<options=bold>metadata updated.</>")
+            op.execute(op.client.containers.update_metadata, container_name, headers)
+            self.line("<options=bold>container metadata updated.</>")

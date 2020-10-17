@@ -1,6 +1,6 @@
 import pytest
 
-import isilon
+from isilon.client import IsilonClient
 from isilon.exceptions import TokenRetrieveException
 
 
@@ -11,6 +11,7 @@ async def test_info(isilon_client_mock):
 
 
 @pytest.mark.asyncio
-async def test_info_failed_to_get_token():
+async def test_info_failed_to_get_token(token_exeption):
+    client = IsilonClient()
     with pytest.raises(TokenRetrieveException):
-        await isilon.discoverability.info()
+        await client.discoverability.info()

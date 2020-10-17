@@ -1,8 +1,8 @@
-import asyncio
+import json
 
 from cleo import Command
 
-import isilon
+from isilon.commands.exec import Operator
 
 
 class AccountsCommand(Command):
@@ -18,14 +18,18 @@ class AccountsCommand(Command):
     """
 
     def handle(self):
+        op = Operator()
         account_name = str(self.argument("account"))
+        headers = dict()
+        for header in self.option("headers"):
+            headers.update(json.loads(header))
         if self.option("show"):
-            resp = asyncio.run(isilon.accounts.show(account_name))
+            resp = op.execute(op.client.accounts.show, account_name, headers)
             self.line(f"{resp}")
         elif self.option("update"):
-            asyncio.run(isilon.accounts.update(account_name))
+            op.execute(op.client.accounts.update, account_name, headers)
             self.line("<options=bold>metadata updated.</>")
         elif self.option("metadata"):
-            resp = asyncio.run(isilon.accounts.metadata(account_name))
+            resp = op.execute(op.client.accounts.metadata, account_name, headers)
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")

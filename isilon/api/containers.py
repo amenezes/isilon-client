@@ -1,57 +1,54 @@
-import attr
-
 from isilon.api.base import BaseAPI
 
 
-@attr.s(frozen=True)
 class Containers(BaseAPI):
     async def objects(self, container_name: str, headers: dict = {}, **kwargs):
         """Show container details and list objects."""
-        response = await self.base_request(
-            self.http.get,
-            f"{self.url}/{self.API_VERSION}/AUTH_{self.credentials.account}/{container_name}?format=json",
+        await self.include_auth_header(headers)
+        async with self.http.get(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}?format=json",
             headers=headers,
             **kwargs,
-        )
-        response = await response.json()
+        ) as resp:
+            response = await resp.json()
         return response
 
-    async def create(self, container_name, headers: dict = {}, **kwargs) -> int:
+    async def create(self, container_name: str, headers: dict = {}, **kwargs) -> int:
         """Create container."""
-        response = await self.base_request(
-            self.http.put,
-            f"{self.url}/{self.API_VERSION}/AUTH_{self.credentials.account}/{container_name}",
+        await self.include_auth_header(headers)
+        async with self.http.put(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}",
             headers=headers,
             **kwargs,
-        )
-        return int(response.status)
+        ) as resp:
+            return int(resp.status)
 
-    async def update_metadata(self, container_name, headers: dict = {}, **kwargs):
+    async def update_metadata(self, container_name: str, headers: dict = {}, **kwargs):
         """Create, update, or delete container metadata."""
-        response = await self.base_request(
-            self.http.put,
-            f"{self.url}/{self.API_VERSION}/AUTH_{self.credentials.account}/{container_name}",
+        await self.include_auth_header(headers)
+        async with self.http.put(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}",
             headers=headers,
             **kwargs,
-        )
-        return response.status
+        ) as resp:
+            return resp.status
 
-    async def show_metadata(self, container_name, headers: dict = {}, **kwargs):
+    async def show_metadata(self, container_name: str, headers: dict = {}, **kwargs):
         """Show container metadata."""
-        response = await self.base_request(
-            self.http.head,
-            f"{self.url}/{self.API_VERSION}/AUTH_{self.credentials.account}/{container_name}",
+        await self.include_auth_header(headers)
+        async with self.http.head(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}",
             headers=headers,
             **kwargs,
-        )
-        return response.headers
+        ) as resp:
+            return dict(resp.headers)
 
-    async def delete(self, container_name, headers: dict = {}, **kwargs):
+    async def delete(self, container_name: str, headers: dict = {}, **kwargs):
         """Delete container."""
-        response = await self.base_request(
-            self.http.delete,
-            f"{self.url}/{self.API_VERSION}/AUTH_{self.credentials.account}/{container_name}",
+        await self.include_auth_header(headers)
+        async with self.http.delete(
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}",
             headers=headers,
             **kwargs,
-        )
-        return response.status
+        ) as resp:
+            return resp.status
