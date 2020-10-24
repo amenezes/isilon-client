@@ -15,4 +15,4 @@ class DiscoverabilityCommand(Command):
     def handle(self):
         op = Operator()
         resp = op.execute(op.client.discoverability.info)
-        self.line(f"{json.dumps(resp, indent=4, sort_keys=True)}")
+        self.line(json.dumps(resp, indent=4, sort_keys=True))

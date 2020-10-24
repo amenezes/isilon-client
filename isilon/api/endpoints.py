@@ -2,12 +2,12 @@ from isilon.api.base import BaseAPI
 
 
 class Endpoints(BaseAPI):
-    async def __call__(self, headers: dict = {}, **kwargs):
+    async def __call__(self, **kwargs):
         """List endpoints."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
         async with self.http.get(
-            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/endpoints",
-            headers=headers,
+            f"{self.address}/{self.API_VERSION}/endpoints",
             **kwargs,
         ) as resp:
-            return resp.status
+            body = await resp.text()
+            return body

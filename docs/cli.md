@@ -144,6 +144,62 @@ Lists containers for an account.
 python -m isilon accounts 
 ```
 
+### Show account details and list containers
+
+```python
+python -m isilon accounts -s test
+```
+
+Sample response
+
+```bash
+[
+    {
+        "bytes": 0,
+        "count": 0,
+        "last_modified": "2020-10-24T00:29:06.773620",
+        "name": "digital"
+    }
+]
+```
+
+### Create, update, or delete account metadata
+
+```python
+python -m isilon accounts -u test --meta '{"department": "HR"}'
+```
+
+Sample response
+
+```bash
+metadata updated.
+```
+
+### Show account metadata
+
+```python
+python -m isilon accounts -m test
+```
+
+Sample response
+
+```bash
+Content-Length: 0
+X-Account-Object-Count: 0
+X-Account-Storage-Policy-Policy-0-Bytes-Used: 0
+X-Account-Storage-Policy-Policy-0-Container-Count: 1
+X-Timestamp: 1603499346.75625
+X-Account-Storage-Policy-Policy-0-Object-Count: 0
+X-Account-Meta-Department: HR
+X-Account-Bytes-Used: 0
+X-Account-Container-Count: 1
+Content-Type: application/json; charset=utf-8
+Accept-Ranges: bytes
+X-Trans-Id: tx1fdd460a8c6e4f5da5a61-005f937e84
+X-Openstack-Request-Id: tx1fdd460a8c6e4f5da5a61-005f937e84
+Date: Sat, 24 Oct 2020 01:08:20 GMT
+```
+
 ## Containers
 
 Lists objects in a container.

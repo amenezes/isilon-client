@@ -9,7 +9,6 @@ pytest-cov
 aioresponses
 flake8
 flake8-blind-except
-flake8-polyfill
 tox
 tox-asdf
 # project

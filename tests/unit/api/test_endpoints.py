@@ -7,7 +7,7 @@ from isilon.exceptions import TokenRetrieveException
 @pytest.mark.asyncio
 async def test_call(isilon_client_mock):
     resp = await isilon_client_mock.endpoints()
-    assert resp == 200
+    assert resp == ""
 
 
 @pytest.mark.asyncio

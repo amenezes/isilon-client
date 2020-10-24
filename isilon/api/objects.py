@@ -1,15 +1,20 @@
+from typing import Optional
+
 from isilon.api.base import BaseAPI
+from isilon.api.metadata import object_metadata
 
 
 class Objects(BaseAPI):
     async def get(
-        self, container_name: str, object_name: str, headers: dict = {}, **kwargs
+        self,
+        container_name: str,
+        object_name: str,
+        **kwargs,
     ):
         """Get object content and metadata."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
         async with self.http.get(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            headers=headers,
             **kwargs,
         ) as resp:
             return resp
@@ -20,15 +25,13 @@ class Objects(BaseAPI):
         object_name: str,
         filename: str,
         chunk_size: int = 50,
-        headers: dict = {},
         **kwargs,
     ):
         """Get large object content and metadata."""
-        await self.include_auth_header(headers)
+        await self.include_auth_header(**kwargs)
         async with self.http.get(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
             chunk_size=chunk_size,
-            headers=headers,
             **kwargs,
         ) as resp:
             with open(filename, "wb") as f:
@@ -40,15 +43,22 @@ class Objects(BaseAPI):
             return resp
 
     async def create(
-        self, container_name: str, object_name: str, data, headers: dict = {}, **kwargs
+        self,
+        container_name: str,
+        object_name: str,
+        data,
+        metadata: Optional[dict] = None,
+        **kwargs,
     ):
         """Create or replace object."""
-        if "Content-Length" not in headers:
-            headers.update({"Content-Length": f"{len(data)}"})
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
+        kwargs = await self._include_object_metadata(metadata, **kwargs)
+        try:
+            kwargs["headers"]["Content-Length"] = len(data)
+        except KeyError:
+            pass
         async with self.http.put(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            headers=headers,
             data=data,
             **kwargs,
         ) as resp:
@@ -59,57 +69,60 @@ class Objects(BaseAPI):
         container_name: str,
         object_name: str,
         filename: str,
-        headers: dict = {},
-        *args,
+        metadata: Optional[dict] = None,
         **kwargs,
     ):
         """Create or replace large object."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
+        kwargs = await self._include_object_metadata(metadata, **kwargs)
         with open(filename, "rb") as f:
             async with self.http.put(
                 f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-                headers=headers,
                 data=f,
                 **kwargs,
             ) as resp:
                 return resp.status
 
-    async def copy(self, container_name, object_name, headers: dict = {}, **kwargs):
+    async def copy(self, container_name, object_name, **kwargs):
         """Copy object."""
         raise NotImplementedError("Operation not supported")
 
-    async def delete(
-        self, container_name: str, object_name, headers: dict = {}, **kwargs
-    ):
+    async def delete(self, container_name: str, object_name, **kwargs):
         """Delete object."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
         async with self.http.delete(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            headers=headers,
             **kwargs,
         ) as resp:
             return resp.status
 
-    async def show_metadata(
-        self, container_name: str, object_name: str, headers: dict = {}, **kwargs
-    ):
+    async def show_metadata(self, container_name: str, object_name: str, **kwargs):
         """Show object metadata."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
         async with self.http.head(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            headers=headers,
             **kwargs,
         ) as resp:
             return dict(resp.headers)
 
     async def update_metadata(
-        self, container_name: str, object_name: str, headers: dict = {}, **kwargs
+        self,
+        container_name: str,
+        object_name: str,
+        metadata: Optional[dict] = None,
+        **kwargs,
     ):
         """Create or update object metadata."""
-        await self.include_auth_header(headers)
+        kwargs = await self.include_auth_header(**kwargs)
+        kwargs = await self._include_object_metadata(metadata, **kwargs)
         async with self.http.post(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            headers=headers,
             **kwargs,
         ) as resp:
             return resp.status
+
+    async def _include_object_metadata(self, metadata, **kwargs) -> dict:
+        if metadata:
+            metadata_headers = object_metadata(metadata)
+            kwargs["headers"].update(metadata_headers)
+        return kwargs

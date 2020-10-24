@@ -11,25 +11,25 @@ class AccountsCommand(Command):
 
     accounts
         {account : Account name.}
-        {--headers=* : HTTP headers.}
-        {--s|show : Create or replace object.}
-        {--u|update : Create, update or delete account metadata.}
+        {--meta=* : Metadata.}
+        {--s|show : Show account details and list containers.}
+        {--u|update : Create, update, or delete account metadata.}
         {--m|metadata : Show account metadata.}
     """
 
     def handle(self):
         op = Operator()
         account_name = str(self.argument("account"))
-        headers = dict()
-        for header in self.option("headers"):
-            headers.update(json.loads(header))
+        meta = dict()
+        for header in self.option("meta"):
+            meta.update(json.loads(header))
         if self.option("show"):
-            resp = op.execute(op.client.accounts.show, account_name, headers)
-            self.line(f"{resp}")
+            resp = op.execute(op.client.accounts.show, account_name)
+            self.line(json.dumps(resp, indent=4, sort_keys=True))
         elif self.option("update"):
-            op.execute(op.client.accounts.update, account_name, headers)
+            op.execute(op.client.accounts.update, account_name, metadata=meta)
             self.line("<options=bold>metadata updated.</>")
         elif self.option("metadata"):
-            resp = op.execute(op.client.accounts.metadata, account_name, headers)
+            resp = op.execute(op.client.accounts.metadata, account_name)
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")

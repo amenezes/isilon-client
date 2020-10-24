@@ -22,9 +22,10 @@ def mock_aioresponse():
 
 @pytest.fixture
 def api_mock(mock_aioresponse):
-    pattern = re.compile(r'^http://localhost:8080/v1/AUTH_test/.*$')
+    pattern = re.compile(r'^http://localhost:8080/v1/AUTH_test.*$')
     mock_aioresponse.get('http://localhost:8080/auth/v1.0', headers={"X-Auth-Token": "abc123lkj"})
     mock_aioresponse.get('http://localhost:8080/info', payload='')
+    mock_aioresponse.get('http://localhost:8080/v1/endpoints', body='')
     mock_aioresponse.get(pattern, status=200, payload='')
     mock_aioresponse.post(pattern, payload='')
     mock_aioresponse.head(pattern, headers={"X-Object-Meta": "test"})

@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/amenezes/isilon-client.svg?branch=master)](https://travis-ci.com/amenezes/isilon-client)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a9be91966fcc2a7b6e72/maintainability)](https://codeclimate.com/github/amenezes/isilon-client/maintainability)
 [![PyPI version](https://badge.fury.io/py/isilon-client.svg)](https://badge.fury.io/py/isilon-client)

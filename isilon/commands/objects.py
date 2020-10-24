@@ -13,7 +13,7 @@ class ObjectsCommand(Command):
     objects
         {container : Container name.}
         {object : Object name.}
-        {--headers=* : HTTP headers.}
+        {--meta=* : Metadata.}
         {--data=? : Object data.}
         {--c|create : Create or replace object.}
         {--m|metadata : Show object metadata.}
@@ -25,9 +25,9 @@ class ObjectsCommand(Command):
         op = Operator()
         container_name = str(self.argument("container"))
         object_name = str(self.argument("object"))
-        headers = dict()
-        for header in self.option("headers"):
-            headers.update(json.loads(header))
+        meta = dict()
+        for header in self.option("meta"):
+            meta.update(json.loads(header))
         if self.option("create"):
             try:
                 data = Path(self.option("data"))
@@ -42,17 +42,14 @@ class ObjectsCommand(Command):
                 container_name,
                 object_name,
                 data,
-                headers=headers,
+                metadata=meta,
             )
             self.line(
                 f"<options=bold><comment>{object_name}</comment> object created.</>"
             )
         elif self.option("metadata"):
             resp = op.execute(
-                op.client.objects.show_metadata,
-                container_name,
-                object_name,
-                headers=headers,
+                op.client.objects.show_metadata, container_name, object_name
             )
             for meta_key, meta_value in resp.items():
                 self.line(f"<options=bold>{meta_key}</>: {meta_value}")
@@ -61,23 +58,17 @@ class ObjectsCommand(Command):
                 op.client.objects.update_metadata,
                 container_name,
                 object_name,
-                headers=headers,
+                metadata=meta,
             )
             self.line("<options=bold>metadata updated.</>")
         elif self.option("delete"):
-            op.execute(
-                op.client.objects.delete, container_name, object_name, headers=headers
-            )
+            op.execute(op.client.objects.delete, container_name, object_name)
             self.line(
                 f"<options=bold><comment>{object_name}</comment> object deleted.</>"
             )
         else:
             op.execute(
-                op.client.objects.get_large,
-                container_name,
-                object_name,
-                object_name,
-                headers=headers,
+                op.client.objects.get_large, container_name, object_name, object_name
             )
             self.line(
                 f"<options=bold><comment>{object_name}</comment> object saved.</>"

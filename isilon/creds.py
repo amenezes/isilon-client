@@ -21,3 +21,6 @@ class Credentials:
     async def x_auth_token(self, headers: dict = {}):
         token = await self.token(headers)
         return {"X-Auth-Token": token}
+
+    def __repr__(self):
+        return f"Credentials(account='{self._client.account}', user='{self._client.user}', password='{self._client.password}')"
