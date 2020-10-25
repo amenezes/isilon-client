@@ -48,12 +48,14 @@ class IsilonClient:
     def _loop(self):
         try:
             loop = asyncio.get_running_loop()
+        except AttributeError:
+            loop = asyncio._get_running_loop()
         except RuntimeError:
             loop = asyncio.get_event_loop()
         return loop
 
     def __del__(self) -> None:
-        self._loop().run_until_complete(self.http.close())
+        asyncio.shield(self._loop().run_until_complete(self.http.close()))
 
 
 async def init_isilon_client(*args, **kwargs):
