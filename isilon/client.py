@@ -37,7 +37,7 @@ class IsilonClient:
         repr=False,
     )
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         self.credentials = Credentials(self)
         self.discoverability = Discoverability(self)
         self.objects = Objects(self)
@@ -55,8 +55,9 @@ class IsilonClient:
         return loop
 
     def __del__(self) -> None:
-        asyncio.shield(self._loop().run_until_complete(self.http.close()))
+        if not self.http.closed:
+            self._loop().run_until_complete(self.http.close())
 
 
-async def init_isilon_client(*args, **kwargs):
+async def init_isilon_client(*args, **kwargs) -> IsilonClient:
     return IsilonClient(*args, **kwargs)

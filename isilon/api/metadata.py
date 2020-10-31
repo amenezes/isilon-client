@@ -1,7 +1,7 @@
 from functools import partial
 
 
-def metadata_build(prefix: str, metadata: dict):
+def metadata_build(prefix: str, metadata: dict) -> dict:
     return {f"{prefix}-{name.capitalize()}": value for name, value in metadata.items()}
 
 

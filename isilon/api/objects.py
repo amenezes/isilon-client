@@ -10,14 +10,15 @@ class Objects(BaseAPI):
         container_name: str,
         object_name: str,
         **kwargs,
-    ):
+    ) -> bytes:
         """Get object content and metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         async with self.http.get(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
             **kwargs,
         ) as resp:
-            return resp
+            content: bytes = await resp.content.read()
+            return content
 
     async def get_large(
         self,
@@ -26,21 +27,20 @@ class Objects(BaseAPI):
         filename: str,
         chunk_size: int = 50,
         **kwargs,
-    ):
+    ) -> int:
         """Get large object content and metadata."""
-        await self.include_auth_header(**kwargs)
+        kwargs = await self.include_auth_header(**kwargs)
         async with self.http.get(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
-            chunk_size=chunk_size,
             **kwargs,
         ) as resp:
-            with open(filename, "wb") as f:
+            with open(filename, "w+b") as f:
                 while True:
                     chunk = await resp.content.read(chunk_size)
                     if not chunk:
                         break
                     f.write(chunk)
-            return resp
+            return resp.status
 
     async def create(
         self,
@@ -49,14 +49,10 @@ class Objects(BaseAPI):
         data,
         metadata: Optional[dict] = None,
         **kwargs,
-    ):
+    ) -> int:
         """Create or replace object."""
         kwargs = await self.include_auth_header(**kwargs)
         kwargs = await self._include_object_metadata(metadata, **kwargs)
-        try:
-            kwargs["headers"]["Content-Length"] = len(data)
-        except KeyError:
-            pass
         async with self.http.put(
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
             data=data,
@@ -71,7 +67,7 @@ class Objects(BaseAPI):
         filename: str,
         metadata: Optional[dict] = None,
         **kwargs,
-    ):
+    ) -> int:
         """Create or replace large object."""
         kwargs = await self.include_auth_header(**kwargs)
         kwargs = await self._include_object_metadata(metadata, **kwargs)
@@ -87,7 +83,7 @@ class Objects(BaseAPI):
         """Copy object."""
         raise NotImplementedError("Operation not supported")
 
-    async def delete(self, container_name: str, object_name, **kwargs):
+    async def delete(self, container_name: str, object_name, **kwargs) -> int:
         """Delete object."""
         kwargs = await self.include_auth_header(**kwargs)
         async with self.http.delete(
@@ -96,7 +92,9 @@ class Objects(BaseAPI):
         ) as resp:
             return resp.status
 
-    async def show_metadata(self, container_name: str, object_name: str, **kwargs):
+    async def show_metadata(
+        self, container_name: str, object_name: str, **kwargs
+    ) -> dict:
         """Show object metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         async with self.http.head(
@@ -111,7 +109,7 @@ class Objects(BaseAPI):
         object_name: str,
         metadata: Optional[dict] = None,
         **kwargs,
-    ):
+    ) -> int:
         """Create or update object metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         kwargs = await self._include_object_metadata(metadata, **kwargs)

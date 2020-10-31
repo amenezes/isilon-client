@@ -17,7 +17,7 @@ class Accounts(BaseAPI):
 
     async def update(
         self, account_name: str, metadata: Optional[dict] = None, **kwargs
-    ):
+    ) -> int:
         """Create, update, or delete account metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         kwargs = await self._include_account_metadata(metadata, **kwargs)
@@ -25,9 +25,9 @@ class Accounts(BaseAPI):
             f"{self.address}/{self.API_VERSION}/AUTH_{self.account}",
             **kwargs,
         ) as resp:
-            return resp
+            return resp.status
 
-    async def metadata(self, account_name: str, **kwargs):
+    async def metadata(self, account_name: str, **kwargs) -> dict:
         """Show account metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         async with self.http.head(

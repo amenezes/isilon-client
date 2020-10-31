@@ -1,7 +1,10 @@
+from aiohttp import ClientSession
+
+
 class BaseAPI:
     API_VERSION = "v1"
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self._client = client
 
     async def include_auth_header(self, **kwargs: dict) -> dict:
@@ -10,16 +13,16 @@ class BaseAPI:
         return kwargs
 
     @property
-    def address(self):
-        return self._client.address
+    def address(self) -> str:
+        return self._client.address  # type: ignore
 
     @property
-    def http(self):
-        return self._client.http
+    def http(self) -> ClientSession:
+        return self._client.http  # type: ignore
 
     @property
-    def account(self):
-        return self._client.account
+    def account(self) -> str:
+        return self._client.account  # type: ignore
 
     def __repr__(self) -> str:
         *_, name = str(self.__class__).split(".")
