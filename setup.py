@@ -27,7 +27,7 @@ setuptools.setup(
             ("Issue tracker", "https://github.com/amenezes/isilon-client/issues"),
         )
     ),
-    install_requires=["aiohttp>=3.5.2", "attrs<=20.1.0"],
+    install_requires=["aiohttp>=3.5.2", "attrs>=19.1.0"],
     tests_require=[
         "pytest",
         "pytest-cov",
