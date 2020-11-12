@@ -41,8 +41,12 @@ class ContainersCommand(Command):
             )
         elif self.option("metadata"):
             resp = op.execute(op.client.containers.show_metadata, container_name)
+            table = self.table(style="compact")
+            metas = []
             for meta_key, meta_value in resp.items():
-                self.line(f"<options=bold>{meta_key}</>: {meta_value}")
+                metas.append([f"<options=bold>{meta_key}</>", f": {meta_value}"])
+            table.set_rows(metas)
+            table.render(self.io)
         elif self.option("update"):
             op.execute(
                 op.client.containers.update_metadata, container_name, metadata=meta

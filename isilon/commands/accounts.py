@@ -31,5 +31,9 @@ class AccountsCommand(Command):
             self.line("<options=bold>metadata updated.</>")
         elif self.option("metadata"):
             resp = op.execute(op.client.accounts.metadata, account_name)
+            table = self.table(style="compact")
+            metas = []
             for meta_key, meta_value in resp.items():
-                self.line(f"<options=bold>{meta_key}</>: {meta_value}")
+                metas.append([f"<options=bold>{meta_key}</>", f": {meta_value}"])
+            table.set_rows(metas)
+            table.render(self.io)
