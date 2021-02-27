@@ -1,3 +1,4 @@
+-r requirements.txt
 black
 isort
 mypy
@@ -8,10 +9,5 @@ pytest-asyncio
 pytest-cov
 aioresponses
 flake8
-flake8-blind-except
 tox
 tox-asdf
-# project
-aiohttp>=3.5.4
-attrs
-cleo
