@@ -39,7 +39,7 @@ class Containers(BaseAPI):
         ) as resp:
             return resp.status
 
-    async def show_metadata(self, container_name: str, **kwargs) -> dict:
+    async def metadata(self, container_name: str, **kwargs) -> dict:
         """Show container metadata."""
         kwargs = await self.include_auth_header(**kwargs)
         async with self.http.head(

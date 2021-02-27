@@ -21,7 +21,7 @@ async def test_update_metadata(isilon_client_mock):
 
 @pytest.mark.asyncio
 async def test_show_metadata(isilon_client_mock):
-    resp = await isilon_client_mock.containers.show_metadata("teste2")
+    resp = await isilon_client_mock.containers.metadata("teste2")
     assert "X-Object-Meta" in resp
 
 

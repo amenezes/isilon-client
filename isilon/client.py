@@ -1,5 +1,6 @@
 import asyncio
 import os
+from typing import Optional
 
 import attr
 from aiohttp import ClientSession
@@ -31,13 +32,16 @@ class IsilonClient:
         validator=attr.validators.instance_of(str),
     )
     http = attr.ib(
-        type=ClientSession,
-        factory=ClientSession,
-        validator=attr.validators.instance_of(ClientSession),
+        type=Optional[ClientSession],
+        default=None,
+        validator=attr.validators.optional(attr.validators.instance_of(ClientSession)),
         repr=False,
     )
 
     def __attrs_post_init__(self) -> None:
+        if self.http is None:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self._create_client_session())
         self.credentials = Credentials(self)
         self.discoverability = Discoverability(self)
         self.objects = Objects(self)
@@ -45,18 +49,13 @@ class IsilonClient:
         self.endpoints = Endpoints(self)
         self.accounts = Accounts(self)
 
-    def _loop(self):
-        try:
-            loop = asyncio.get_running_loop()
-        except AttributeError:
-            loop = asyncio._get_running_loop()
-        except RuntimeError:
-            loop = asyncio.get_event_loop()
-        return loop
+    async def _create_client_session(self):
+        self.http = ClientSession()
 
     def __del__(self) -> None:
-        if not self.http.closed:
-            self._loop().run_until_complete(self.http.close())
+        if not self.http.closed:  # type: ignore
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(asyncio.shield(self.http.close()))  # type: ignore
 
 
 async def init_isilon_client(*args, **kwargs) -> IsilonClient:

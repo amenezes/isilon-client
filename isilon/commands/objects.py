@@ -19,6 +19,7 @@ class ObjectsCommand(Command):
         {--m|metadata : Show object metadata.}
         {--u|update : Create or update object metadata.}
         {--d|delete : Delete object.}
+        {--p|presigned : Generate a presigned URL to download an object.}
     """
 
     def handle(self):
@@ -69,6 +70,19 @@ class ObjectsCommand(Command):
             op.execute(op.client.objects.delete, container_name, object_name)
             self.line(
                 f"<options=bold><comment>{object_name}</comment> object deleted.</>"
+            )
+        elif self.option("presigned"):
+            try:
+                resp = op.execute(
+                    op.client.objects.presigned_url, container_name, object_name
+                )
+            except Exception:
+                self.line(
+                    "<error>Error to generate presigned-url. Please, check the preconditions: <fg=magenta;options=bold>https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html</></>"
+                )
+                raise SystemExit(1)
+            self.line(
+                f"<options=bold>Presigned-URL: <options=bold;fg=magenta>{resp}</></>"
             )
         else:
             op.execute(

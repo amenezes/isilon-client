@@ -11,8 +11,8 @@ async def test_token(isilon_client_mock):
 
 
 @pytest.mark.asyncio
-async def test_token_failed(token_exeption):
-    client = IsilonClient()
+async def test_token_failed(token_exeption, http):
+    client = IsilonClient(http=http)
     with pytest.raises(TokenRetrieveException):
         await client.credentials.token()
 
@@ -24,7 +24,7 @@ async def test_x_auth_token(isilon_client_mock):
 
 
 @pytest.mark.asyncio
-async def test_x_auth_token_failed(token_exeption):
-    client = IsilonClient()
+async def test_x_auth_token_failed(token_exeption, http):
+    client = IsilonClient(http=http)
     with pytest.raises(TokenRetrieveException):
         await client.credentials.x_auth_token()

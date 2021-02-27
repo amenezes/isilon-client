@@ -1,6 +1,7 @@
 import re
 
 import pytest
+import aiohttp
 from cleo import Application
 from aioresponses import aioresponses
 
@@ -14,6 +15,11 @@ def token_exeption(mock_aioresponse):
     mock_aioresponse.get(
         "http://localhost:8080/auth/v1.0", exception=TokenRetrieveException
     )
+
+@pytest.fixture
+@pytest.mark.asyncio
+async def http():
+    return aiohttp.ClientSession()
 
 @pytest.fixture
 def mock_aioresponse():

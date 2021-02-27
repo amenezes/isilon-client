@@ -1,5 +1,6 @@
 from typing import Optional
 
+from isilon import utils
 from isilon.api.base import BaseAPI
 from isilon.api.metadata import object_metadata
 
@@ -41,6 +42,15 @@ class Objects(BaseAPI):
                         break
                     f.write(chunk)
             return resp.status
+
+    async def presigned_url(self, container_name: str, object_name: str, **kwargs):
+        user_key = await self.account_primary_key()
+        uri = utils.generate_presigned_uri(
+            user_key,
+            f"{self.address}/{self.API_VERSION}/AUTH_{self.account}/{container_name}/{object_name}",
+            **kwargs,
+        )
+        return uri
 
     async def create(
         self,

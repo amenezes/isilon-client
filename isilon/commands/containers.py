@@ -1,6 +1,9 @@
 import json
 
 from cleo import Command
+from pygments import highlight
+from pygments.formatters.terminal import TerminalFormatter
+from pygments.lexers import JsonLexer
 
 from isilon.commands.exec import Operator
 
@@ -28,7 +31,9 @@ class ContainersCommand(Command):
         if self.option("objects"):
             resp = op.execute(op.client.containers.objects, container_name)
             for obj in resp:
-                self.line(json.dumps(obj, indent=4, sort_keys=True))
+                self.line(
+                    f"{highlight(json.dumps(obj, indent=4, sort_keys=True), JsonLexer(), TerminalFormatter())}"
+                )
         elif self.option("create"):
             op.execute(op.client.containers.create, container_name, metadata=meta)
             self.line(
@@ -40,7 +45,7 @@ class ContainersCommand(Command):
                 f"<options=bold>container <comment>{container_name}</comment> deleted.</>"
             )
         elif self.option("metadata"):
-            resp = op.execute(op.client.containers.show_metadata, container_name)
+            resp = op.execute(op.client.containers.metadata, container_name)
             table = self.table(style="compact")
             metas = []
             for meta_key, meta_value in resp.items():

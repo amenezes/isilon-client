@@ -11,7 +11,7 @@ async def test_info(isilon_client_mock):
 
 
 @pytest.mark.asyncio
-async def test_info_failed_to_get_token(token_exeption):
-    client = IsilonClient()
+async def test_info_failed_to_get_token(token_exeption, http):
+    client = IsilonClient(http=http)
     with pytest.raises(TokenRetrieveException):
         await client.discoverability.info()
