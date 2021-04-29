@@ -280,7 +280,7 @@ Creates, replaces, shows details for, and deletes objects.
 ### Create or replace object
 
 ```python
-python -m isilon objects -c my_container my_object
+python -m isilon objects -c my_container my_object --data my_file
 ```
 
 ### Show object metadata

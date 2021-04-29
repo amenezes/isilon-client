@@ -5,8 +5,8 @@ VERSION := $(shell cat isilon/__version__.py | cut -d'"' -f 2)
 lint:
 ifeq ($(SKIP_STYLE), )
 	@echo "> running isort..."
-	isort isilon/
-	isort tests/
+	isort isilon --profile black
+	isort tests --profile black
 	@echo "> running black..."
 	black isilon
 	black tests

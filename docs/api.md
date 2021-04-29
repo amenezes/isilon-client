@@ -1,6 +1,11 @@
 # Object Storage API
 
-> reference: [openstack object storage API](https://docs.openstack.org/api-ref/object-store/)
+## Reference
+
+- [openstack object storage API](https://docs.openstack.org/api-ref/object-store/)
+- [cors](https://docs.openstack.org/swift/latest/cors.html)
+
+## Usage
 
 Default values from `IsilonClient`.
 
@@ -70,7 +75,7 @@ metadata = {'X-Container-Meta-Test': "My metadata"}
 await client.containers.update_metadata("my_container", headers=metadata)
 
 # show container metadata
-await client.containers.show_metadata("my_container")
+await client.containers.metadata("my_container")
 
 # delete container
 await client.containers.delete("my_container")
