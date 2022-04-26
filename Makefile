@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := about
 VENV_DIR := $(shell [ ! -d "venv" ] && echo 1 || echo 0)
-VERSION := $(shell cat isilon/__version__.py | cut -d'"' -f 2)
+VERSION := $(shell cat isilon/__init__.py | grep '__version__ ' | cut -d'"' -f 2)
 
 lint:
 ifeq ($(SKIP_STYLE), )

@@ -14,9 +14,9 @@ class Credentials:
             f"{self._client.address}/auth/v1.0", headers=headers
         ) as resp:
             try:
-                return resp.headers["X-Auth-Token"]  # type: ignore
+                return str(resp.headers["X-Auth-Token"])
             except Exception:
-                raise TokenRetrieveException
+                raise TokenRetrieveException("Failed to obtain authentication token.")
 
     async def x_auth_token(self, headers: dict = {}) -> dict:
         token = await self.token(headers)

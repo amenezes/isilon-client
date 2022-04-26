@@ -51,9 +51,8 @@ def api_mock(mock_aioresponse):
 
 
 @pytest.fixture
-def isilon_client_mock(api_mock):
-    client = IsilonClient()
-    return client
+def isilon_client_mock(http, api_mock):
+    return IsilonClient(http)
 
 
 @pytest.fixture

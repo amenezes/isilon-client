@@ -1,9 +1,4 @@
-import logging
-import os
+from .client import IsilonClient, init_client
 
-from isilon.__version__ import __version__
-from isilon.client import IsilonClient
-
-logging.getLogger("isilon-client").addHandler(logging.NullHandler())
-
-__all__ = ["__version__", "IsilonClient"]
+__version__ = "0.2.0"
+__all__ = ["__version__", "IsilonClient", "init_client"]
