@@ -1,6 +1,6 @@
 from cleo import Application
 
-from isilon.__version__ import __version__
+from isilon import __version__
 from isilon.commands import (
     AccountsCommand,
     ContainersCommand,
