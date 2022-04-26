@@ -1,30 +1,27 @@
 import pytest
 
-from isilon.client import IsilonClient
 from isilon.exceptions import TokenRetrieveException
 
 
 @pytest.mark.asyncio
-async def test_token(isilon_client_mock):
-    token = await isilon_client_mock.credentials.token()
+async def test_token(isilon_client):
+    token = await isilon_client.credentials.token()
     assert token == "abc123lkj"
 
 
 @pytest.mark.asyncio
-async def test_token_failed(token_exeption, http):
-    client = IsilonClient(http=http)
+async def test_token_failed(token_exeption, isilon_client2):
     with pytest.raises(TokenRetrieveException):
-        await client.credentials.token()
+        await isilon_client2.credentials.token()
 
 
 @pytest.mark.asyncio
-async def test_x_auth_token(isilon_client_mock):
-    auth_token = await isilon_client_mock.credentials.x_auth_token()
+async def test_x_auth_token(isilon_client):
+    auth_token = await isilon_client.credentials.x_auth_token()
     assert auth_token == {"X-Auth-Token": "abc123lkj"}
 
 
 @pytest.mark.asyncio
-async def test_x_auth_token_failed(token_exeption, http):
-    client = IsilonClient(http=http)
+async def test_x_auth_token_failed(token_exeption, isilon_client2):
     with pytest.raises(TokenRetrieveException):
-        await client.credentials.x_auth_token()
+        await isilon_client2.credentials.x_auth_token()

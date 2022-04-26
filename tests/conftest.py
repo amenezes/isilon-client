@@ -1,11 +1,10 @@
 import re
 
-import aiohttp
 import pytest
 from aioresponses import aioresponses
 from cleo import Application
 
-from isilon.client import IsilonClient
+from isilon.client import init_client
 from isilon.commands import (
     AccountsCommand,
     ContainersCommand,
@@ -21,12 +20,6 @@ def token_exeption(mock_aioresponse):
     mock_aioresponse.get(
         "http://localhost:8080/auth/v1.0", exception=TokenRetrieveException
     )
-
-
-@pytest.fixture
-@pytest.mark.asyncio
-async def http():
-    return aiohttp.ClientSession()
 
 
 @pytest.fixture
@@ -51,8 +44,19 @@ def api_mock(mock_aioresponse):
 
 
 @pytest.fixture
-def isilon_client_mock(http, api_mock):
-    return IsilonClient(http)
+@pytest.mark.asyncio
+async def isilon_client(api_mock):
+    client = await init_client()
+    yield client
+    await client.close()
+
+
+@pytest.fixture
+@pytest.mark.asyncio
+async def isilon_client2():
+    client = await init_client()
+    yield client
+    await client.close()
 
 
 @pytest.fixture

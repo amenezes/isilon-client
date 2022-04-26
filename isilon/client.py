@@ -46,6 +46,9 @@ class IsilonClient:
         self.endpoints = Endpoints(self)
         self.accounts = Accounts(self)
 
+    async def close(self):
+        await self.http.close()
+
 
 async def init_client(
     address: str = os.getenv("ISILON_ADDRESS", "http://localhost:8080"),
